@@ -42,7 +42,7 @@ isIgnored = function(file, patterns) {
 };
 
 // Recursively delete files matching patterns from a directory
-deleteIgnoredFiles = function(dir, patterns, deletedFiles = []) {
+deleteIgnoredFiles = function(dir, patterns, baseDir = dir, deletedFiles = []) {
   var entries, entry, err, fullPath, j, len1, relPath, stat;
   try {
     if (fs.existsSync(dir)) {
@@ -50,10 +50,10 @@ deleteIgnoredFiles = function(dir, patterns, deletedFiles = []) {
       for (j = 0, len1 = entries.length; j < len1; j++) {
         entry = entries[j];
         fullPath = path.join(dir, entry);
-        relPath = path.relative(path.dirname(dir), fullPath);
+        relPath = path.relative(baseDir, fullPath).replace(/\\/g, '/');
         stat = fs.statSync(fullPath);
         if (stat.isDirectory()) {
-          deleteIgnoredFiles(fullPath, patterns, deletedFiles);
+          deleteIgnoredFiles(fullPath, patterns, baseDir, deletedFiles);
         } else {
           if (isIgnored(relPath, patterns)) {
             fs.unlinkSync(fullPath);
@@ -61,6 +61,8 @@ deleteIgnoredFiles = function(dir, patterns, deletedFiles = []) {
           }
         }
       }
+    } else {
+      c.error(`Output directory does not exist: ${dir}`);
     }
   } catch (error) {
     err = error;
@@ -91,7 +93,14 @@ pluginHandler = function(compilationResult, patterns = []) {
     c.error("Output directory not specified in config.");
     return;
   }
-  c.info(`Removing files matching patterns: ${ignorePatterns.join(', ')}`);
+  // Convert to absolute path if relative
+  if (!path.isAbsolute(outputDir)) {
+    outputDir = path.resolve(outputDir);
+  }
+  if (!fs.existsSync(outputDir)) {
+    c.error(`Output directory does not exist: ${outputDir}`);
+    return;
+  }
   // Delete ignored files
   deletedFiles = deleteIgnoredFiles(outputDir, ignorePatterns);
   if (deletedFiles.length > 0) {
