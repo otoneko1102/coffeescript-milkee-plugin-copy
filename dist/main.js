@@ -108,7 +108,7 @@ pluginHandler = function(compilationResult, patterns = []) {
     results = [];
     for (j = 0, len1 = deletedFiles.length; j < len1; j++) {
       file = deletedFiles[j];
-      results.push(c.log(`  - ${file}`));
+      results.push(c.info(`  - ${file}`));
     }
     return results;
   } else {
