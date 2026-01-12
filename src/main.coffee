@@ -23,21 +23,23 @@ isIgnored = (file, patterns) ->
   return false
 
 # Recursively delete files matching patterns from a directory
-deleteIgnoredFiles = (dir, patterns, deletedFiles = []) ->
+deleteIgnoredFiles = (dir, patterns, baseDir = dir, deletedFiles = []) ->
   try
     if fs.existsSync(dir)
       entries = fs.readdirSync(dir)
       for entry in entries
         fullPath = path.join(dir, entry)
-        relPath = path.relative(path.dirname(dir), fullPath)
+        relPath = path.relative(baseDir, fullPath).replace(/\\/g, '/')
         stat = fs.statSync(fullPath)
 
         if stat.isDirectory()
-          deleteIgnoredFiles(fullPath, patterns, deletedFiles)
+          deleteIgnoredFiles(fullPath, patterns, baseDir, deletedFiles)
         else
           if isIgnored(relPath, patterns)
             fs.unlinkSync(fullPath)
             deletedFiles.push(relPath)
+    else
+      c.error "Output directory does not exist: #{dir}"
   catch err
     c.error "Error processing directory: #{err.message}"
 
@@ -67,7 +69,13 @@ pluginHandler = (compilationResult, patterns = []) ->
     c.error "Output directory not specified in config."
     return
 
-  c.info "Removing files matching patterns: #{ignorePatterns.join(', ')}"
+  # Convert to absolute path if relative
+  if not path.isAbsolute(outputDir)
+    outputDir = path.resolve(outputDir)
+
+  if not fs.existsSync(outputDir)
+    c.error "Output directory does not exist: #{outputDir}"
+    return
 
   # Delete ignored files
   deletedFiles = deleteIgnoredFiles(outputDir, ignorePatterns)
