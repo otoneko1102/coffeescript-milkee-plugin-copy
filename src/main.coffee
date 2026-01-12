@@ -83,7 +83,7 @@ pluginHandler = (compilationResult, patterns = []) ->
   if deletedFiles.length > 0
     c.success "Deleted #{deletedFiles.length} file(s):"
     for file in deletedFiles
-      c.log "  - #{file}"
+      c.info "  - #{file}"
   else
     c.info "No files matched the ignore patterns."
 
