@@ -17,6 +17,9 @@ File copy control with various options added.
 #### coffee.config.cjs
 
 ```js
+/** @type {import('@milkee/d').Config} */
+const copyExtra = require('milkee-plugin-copy');
+
 module.exports = {
   entry: 'src',
   output: 'dist',
@@ -28,12 +31,7 @@ module.exports = {
       copy: true,  // Enable file copy control
     },
     plugins: [
-      {
-        resolve: 'milkee-plugin-copy',
-        options: {
-          ignore: ['*.py', 'foo.txt', '*.tmp']
-        }
-      }
+      copyExtra({ ignore: ['*.py', 'foo.txt', '*.tmp'] })
     ]
   }
 }

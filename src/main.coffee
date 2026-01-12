@@ -44,7 +44,7 @@ deleteIgnoredFiles = (dir, patterns, deletedFiles = []) ->
   return deletedFiles
 
 # Main plugin function
-main = (compilationResult, options = {}) ->
+pluginHandler = (compilationResult, patterns = []) ->
   { config, compiledFiles, stdout, stderr } = compilationResult
 
   # Check if copy option is enabled
@@ -54,8 +54,8 @@ main = (compilationResult, options = {}) ->
     c.info "Copy option is not enabled. Plugin skipped."
     return
 
-  # Get ignore patterns from options
-  ignorePatterns = options?.ignore or []
+  # Get ignore patterns
+  ignorePatterns = patterns or []
 
   if ignorePatterns.length is 0
     c.info "No ignore patterns specified."
@@ -79,4 +79,8 @@ main = (compilationResult, options = {}) ->
   else
     c.info "No files matched the ignore patterns."
 
-module.exports = main
+# Plugin factory function
+module.exports = (options = {}) ->
+  ignorePatterns = options?.ignore or []
+  return (compilationResult) ->
+    pluginHandler(compilationResult, ignorePatterns)

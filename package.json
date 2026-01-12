@@ -1,6 +1,6 @@
 {
   "name": "milkee-plugin-copy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "File copy control with various options added.",
   "main": "dist/main.js",
   "scripts": {
