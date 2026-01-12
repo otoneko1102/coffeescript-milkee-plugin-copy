@@ -5,7 +5,7 @@ fs = require('fs');
 
 path = require('path');
 
-minimatch = require('minimatch');
+({minimatch} = require('minimatch'));
 
 consola = require('consola');
 
