@@ -1,6 +1,6 @@
 {
   "name": "milkee-plugin-copy",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "File copy control with various options added.",
   "main": "dist/main.js",
   "scripts": {
@@ -15,6 +15,7 @@
     "milkee",
     "coffeescript",
     "coffee",
+    "copy",
     "plugin",
     "milkee-plugin"
   ],
@@ -30,6 +31,6 @@
   },
   "devDependencies": {
     "coffeescript": "^2.7.0",
-    "milkee": "^3.0.0"
+    "milkee": "^3.1.2"
   }
 }
